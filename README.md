@@ -67,6 +67,10 @@ git config --global --list
 ✅ Concept: Python script to process -fn, -ip, -u options, fetch data, and save results.
 - Create passive.py
 - Make passive.py executable
+
+## 🛠️ STEP 5 — Real IP Info Lookup with API
+### 🎯 Goal: Use a public IP geolocation API to fetch real data
+✅ Concept: Query a free API (e.g., ip-api.com) to retrieve city and ISP from an IP address.
 - Implement functions to search for full_name, ip_address, and username.
 - Add logic to fetch data (mock for now).
 - Save results in result.txt or result2.txt based on the option chosen.
@@ -74,4 +78,9 @@ git config --global --list
 ## 🛠️ STEP 4 — Implement Search Functions in passive.py
 ### 🎯 Goal: Add functionality to search based on -fn, -ip, or -u options
 ✅ Concept: Fetch data (mock for now) based on input type and save results.
+- Modify passive.py to use the real API in search_ip
+🧪 Test:
+```bash
+./passive.py -ip 8.8.8.8
+```
 
