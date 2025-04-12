@@ -62,3 +62,16 @@ git config --global --list
 ### 🎯 Goal: Work locally on a project folder synced with GitHub
 ✅ Concept: Your code lives in a local Git repo, which syncs with the GitHub cloud.
 
+## 🛠️ STEP 4 — Create passive.py Script
+🎯 Goal: Setup basic script structure for handling CLI arguments
+✅ Concept: Python script to process -fn, -ip, -u options, fetch data, and save results.
+- Create passive.py
+- Make passive.py executable
+- Implement functions to search for full_name, ip_address, and username.
+- Add logic to fetch data (mock for now).
+- Save results in result.txt or result2.txt based on the option chosen.
+
+## 🛠️ STEP 4 — Implement Search Functions in passive.py
+### 🎯 Goal: Add functionality to search based on -fn, -ip, or -u options
+✅ Concept: Fetch data (mock for now) based on input type and save results.
+
