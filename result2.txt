@@ -1,2 +1,5 @@
-ISP: FSociety, S.A.
-City Lat/Lon: (13.731) / (-1.1373)
+ISP: Google LLC
+City: Ashburn
+Latitude: 39.03
+Longitude: -77.5
+Country: United States

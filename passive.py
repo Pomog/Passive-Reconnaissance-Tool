@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 import argparse
+import requests
+
+API_KEY = "YOUR_HUNTER_API_KEY"
 
 def main():
     parser = argparse.ArgumentParser(description="Passive Reconnaissance Tool")
@@ -18,57 +21,86 @@ def main():
         parser.print_help()
 
 def search_full_name(full_name):
-    # Mock data for demonstration
-    mock_data = {
-        "Jean Dupont": {
-            "First name": "Jean",
-            "Last name": "Dupont",
-            "Address": "7 rue du Progrès\n75016 Paris",
-            "Number": "+33601010101"
-        }
-    }
+    first_name, last_name = full_name.strip().split(" ", 1)
 
-    if full_name in mock_data:
-        result = mock_data[full_name]
-        save_result(result, "result.txt")
-        print(f"Saved in result.txt")
+    print(f"First name: {first_name}")
+    print(f"Last name: {last_name}")
+
+    query_variants = [
+        f'"{full_name}" site:linkedin.com',
+        f'"{full_name}" site:thatsthem.com',
+        f'"{full_name}" site:peekyou.com',
+        f'"{full_name}" site:facebook.com',
+        f'"{full_name}" site:findpeoplefast.net'
+    ]
+
+    results = {}
+
+    for query in query_variants:
+        print(f"Searching: {query}")
+        search_results = ddg(query, max_results=2)
+        print(search_results)
+        for result in search_results:
+            title = result.get("title", "No title")
+            link = result.get("href", "No link")
+            results[title] = link
+
+    if results:
+        save_result(results, "result.txt")
+        print("Saved in result.txt")
     else:
-        print(f"No information found for {full_name}")
+        print("No data found.")
+
 
 def search_ip(ip_address):
-    # Mock data for demonstration
-    mock_data = {
-        "127.0.0.1": {
-            "ISP": "FSociety, S.A.",
-            "City Lat/Lon": "(13.731) / (-1.1373)"
-        }
-    }
+    url = f"http://ip-api.com/json/{ip_address}"
+    try:
+        response = requests.get(url, timeout=5)
+        data = response.json()
 
-    if ip_address in mock_data:
-        result = mock_data[ip_address]
-        save_result(result, "result2.txt")
-        print(f"Saved in result2.txt")
-    else:
-        print(f"No information found for {ip_address}")
+        if data['status'] == 'success':
+            result = {
+                "ISP": data.get("isp", "Unknown"),
+                "City": data.get("city", "Unknown"),
+                "Latitude": str(data.get("lat", "N/A")),
+                "Longitude": str(data.get("lon", "N/A")),
+                "Country": data.get("country", "Unknown")
+            }
+            save_result(result, "result2.txt")
+            print("Saved in result2.txt")
+        else:
+            print("Invalid IP or not found.")
+    except Exception as e:
+        print(f"Error occurred: {e}")
 
 def search_username(username):
-    # Mock data for demonstration
-    mock_data = {
-        "@user01": {
-            "Facebook": "yes",
-            "Twitter": "yes",
-            "Linkedin": "yes",
-            "Instagram": "no",
-            "Skype": "yes"
-        }
+    # Remove leading "@" if present
+    username = username.lstrip("@")
+
+    platforms = {
+        "Facebook": f"https://www.facebook.com/{username}",
+        "Twitter": f"https://www.twitter.com/{username}",
+        "GitHub": f"https://www.github.com/{username}",
+        "Reddit": f"https://www.reddit.com/user/{username}",
+        "TikTok": f"https://www.tiktok.com/@{username}",
+        "Instagram": f"https://www.instagram.com/{username}",
     }
 
-    if username in mock_data:
-        result = mock_data[username]
-        save_result(result, "result3.txt")
-        print(f"Saved in result3.txt")
-    else:
-        print(f"No information found for {username}")
+    result = {}
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+
+    for name, url in platforms.items():
+        try:
+            response = requests.get(url, headers=headers, timeout=5)
+            result[name] = "yes" if response.status_code == 200 else "no"
+        except Exception as e:
+            result[name] = "error"
+
+    save_result(result, "result3.txt")
+    print("Saved in result3.txt")
+
 
 def save_result(result, filename):
     with open(filename, "w") as file:

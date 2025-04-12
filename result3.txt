@@ -1,5 +1,6 @@
 Facebook: yes
-Twitter: yes
-Linkedin: yes
-Instagram: no
-Skype: yes
+Twitter: no
+GitHub: yes
+Reddit: yes
+TikTok: yes
+Instagram: yes
