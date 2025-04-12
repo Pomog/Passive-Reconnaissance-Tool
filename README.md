@@ -96,3 +96,11 @@ HTTP GET requests to known user profile URLs and analyze the response status cod
 - ⚠️ This is passive OSINT. We’re just visiting public URLs. No login or scraping.
 - 📄 Modify passive.py - search_username
 
+## 🛠️ STEP 7 — Full Name Search Using Real OSINT Techniques
+### 🎯 Goal: Search public directories or platforms (Google, DuckDuckGo, Pipl, LinkedIn, Whitepages). Report possible addresses, phone numbers, emails, or profiles.
+✅ Concept:
+Unlike IPs/usernames, full names are less deterministic. So instead of fixed URLs, we perform targeted search queries on public engines like:
+🔧 Plan
+1. Build a search query: "{first} {last}" site:linkedin.com or site:thatsthem.com
+2. Fetch results using the duckduckgo_search Python module.
+3. Store the top 3–5 links.
