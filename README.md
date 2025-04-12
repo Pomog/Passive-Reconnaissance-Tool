@@ -75,7 +75,7 @@ git config --global --list
 - Add logic to fetch data (mock for now).
 - Save results in result.txt or result2.txt based on the option chosen.
 
-## 🛠️ STEP 4 — Implement Search Functions in passive.py
+## 🛠️ STEP 6 — Implement Search Functions in passive.py
 ### 🎯 Goal: Add functionality to search based on -fn, -ip, or -u options
 ✅ Concept: Fetch data (mock for now) based on input type and save results.
 - Modify passive.py to use the real API in search_ip
@@ -83,4 +83,16 @@ git config --global --list
 ```bash
 ./passive.py -ip 8.8.8.8
 ```
+## 🛠️ STEP 6 — Check if a Username Exists on Multiple Social Networks
+### 🎯 Goal:
+Implement real checks to verify if a given username is in use on at least 5 platforms (Facebook, Twitter, GitHub, Instagram, Reddit, TikTok)
+✅ Concept:
+HTTP GET requests to known user profile URLs and analyze the response status code:
+```
+200 OK → user exists ✅
+
+404 Not Found → user doesn’t exist ❌
+```
+- ⚠️ This is passive OSINT. We’re just visiting public URLs. No login or scraping.
+- 📄 Modify passive.py - search_username
 
