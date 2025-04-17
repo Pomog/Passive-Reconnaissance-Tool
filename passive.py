@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import re
 import argparse
 import requests
 
@@ -20,36 +21,65 @@ def main():
     else:
         parser.print_help()
 
-def search_full_name(full_name):
-    first_name, last_name = full_name.strip().split(" ", 1)
+import re
+import requests
 
-    print(f"First name: {first_name}")
-    print(f"Last name: {last_name}")
+def _extract(pattern: str, text: str, default: str = "N/A") -> str:
+    """Helper that mimics the Go `extract` function."""
+    m = re.search(pattern, text, re.S | re.I)
+    return m.group(1).strip() if m else default
 
-    query_variants = [
-        f'"{full_name}" site:linkedin.com',
-        f'"{full_name}" site:thatsthem.com',
-        f'"{full_name}" site:peekyou.com',
-        f'"{full_name}" site:facebook.com',
-        f'"{full_name}" site:findpeoplefast.net'
-    ]
 
-    results = {}
+def search_full_name(full_name: str) -> None:
+    """
+    Look up a person by full name on whitepages.be and save the result.
 
-    for query in query_variants:
-        print(f"Searching: {query}")
-        search_results = ddg(query, max_results=2)
-        print(search_results)
-        for result in search_results:
-            title = result.get("title", "No title")
-            link = result.get("href", "No link")
-            results[title] = link
+    It mirrors the behaviour of the Go `findByName` example:
+      • splits the name into first / last
+      • issues a GET request with a desktop User‑Agent
+      • scrapes address and phone with regexes
+      • writes everything to `result.txt`
+    """
+    # ---- 1. Basic sanity check ------------------------------------------------
+    names = full_name.strip().split()
+    if len(names) < 2:
+        print("Error: you must supply both first and last name.")
+        return
 
-    if results:
-        save_result(results, "result.txt")
-        print("Saved in result.txt")
-    else:
-        print("No data found.")
+    first_name, last_name = names[0], names[1]
+
+    # ---- 2. Build the URL exactly like the Go code ----------------------------
+    url = (
+        "https://www.whitepages.be/Search/Person/"
+        f"?what={first_name}+{last_name}&where="
+    )
+
+    headers = {"User-Agent": "Mozilla/5.0"}
+
+    try:
+        resp = requests.get(url, headers=headers, timeout=10)
+        resp.raise_for_status()
+    except Exception as e:
+        print(f"[!] Error fetching data: {e}")
+        return
+
+    content = resp.text
+
+    # ---- 3. Scrape the interesting bits --------------------------------------
+    address = _extract(r'<span class="wg-address">\s*([^<]+)</span>', content)
+    phone   = _extract(r'"phone"\s*:\s*"(\+\d+)"', content)
+
+    result = {
+        "First name": first_name,
+        "Last name": last_name,
+        "Address": address,
+        "Phone": phone,
+    }
+
+    # ---- 4. Persist & report --------------------------------------------------
+    save_result(result, "result.txt")
+    print("→ Saved in result.txt")
+
 
 
 def search_ip(ip_address):
